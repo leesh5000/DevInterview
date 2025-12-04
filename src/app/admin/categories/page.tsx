@@ -33,19 +33,19 @@ export default async function AdminCategoriesPage() {
   return (
     <main className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">카테고리 관리</h1>
+        <h1 className="text-2xl font-semibold text-foreground">카테고리 관리</h1>
         <CategoryForm
           trigger={<Button>새 카테고리 추가</Button>}
         />
       </div>
 
       {categories.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-muted-foreground">
           <p>아직 생성된 카테고리가 없습니다.</p>
           <p className="mt-2">새 카테고리를 추가해보세요.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-card rounded-lg border border-border overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
@@ -65,7 +65,7 @@ export default async function AdminCategoriesPage() {
                   <TableCell>
                     <Badge variant="secondary">{category.slug}</Badge>
                   </TableCell>
-                  <TableCell className="text-gray-500">
+                  <TableCell className="text-muted-foreground">
                     {category.description || "-"}
                   </TableCell>
                   <TableCell>{category._count.questions}</TableCell>

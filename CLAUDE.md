@@ -79,9 +79,21 @@ Required:
 
 ## Styling Conventions
 
-- Dark mode uses custom hex colors (not Tailwind defaults): `dark:bg-[#0a0a0a]`, `dark:bg-[#111111]`, `dark:bg-[#141414]`, `dark:border-[#1a1a1a]`
-- Always pair light and dark mode classes together (e.g., `bg-white dark:bg-[#141414]`)
+Design system follows Vercel's minimalist aesthetic with CSS variables defined in `globals.css`.
+
+### Color Palette (CSS Variables)
+- **Background**: `bg-background` (Light: #fafafa, Dark: #000000)
+- **Foreground**: `text-foreground` (Light: #000000, Dark: #ededed)
+- **Card**: `bg-card` (Light: #ffffff, Dark: #111111)
+- **Border**: `border-border` (Light: #eaeaea, Dark: #333333)
+- **Muted**: `text-muted-foreground` (Light: #666666, Dark: #888888)
+- **Primary**: `bg-primary` (Light: black button, Dark: white button)
+
+### Usage Guidelines
+- Use CSS variable classes instead of hardcoded colors (e.g., `text-foreground` not `text-gray-900 dark:text-white`)
 - Use `transition-colors` on containers for smooth theme transitions
+- Cards: `bg-card border border-border rounded-lg`
+- Headers: `bg-background/80 backdrop-blur-sm border-b border-border`
 
 ## Notes
 

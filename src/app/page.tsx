@@ -41,15 +41,18 @@ export default async function Home() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-[#0a0a0a] dark:to-[#111111] transition-colors">
+    <div className="min-h-screen bg-background transition-colors">
       {/* Header */}
-      <header className="border-b border-gray-200 dark:border-[#1a1a1a] bg-white dark:bg-[#111111]">
+      <header className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/" className="text-xl font-bold text-gray-900 dark:text-white">
+          <Link href="/" className="text-lg font-semibold text-foreground">
             DevInterview
           </Link>
           <nav className="flex gap-4 items-center">
-            <Link href="/questions" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+            <Link
+              href="/questions"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
               질문 목록
             </Link>
             <ThemeToggle />
@@ -58,43 +61,44 @@ export default async function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20 text-center">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+      <section className="container mx-auto px-4 py-24 text-center">
+        <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 tracking-tight">
           개발자 면접, 확실하게 준비하세요
         </h1>
-        <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
+        <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
           실제 면접에서 자주 나오는 질문과 모범 답안을 확인하고,
           AI 요약과 추천 강의로 효율적으로 학습하세요.
         </p>
         <Link href="/questions">
-          <Button size="lg" className="text-lg px-8">
+          <Button size="lg" className="gap-2">
             면접 질문 보기
+            <ArrowRight className="h-4 w-4" />
           </Button>
         </Link>
       </section>
 
       {/* Categories Section */}
       <section className="container mx-auto px-4 py-16">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+        <h2 className="text-2xl font-semibold text-foreground mb-8 text-center">
           카테고리별 면접 질문
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {categoriesWithCount.map((category) => (
             <Link key={category.slug} href={`/questions?category=${category.slug}`}>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full bg-white dark:bg-[#141414] border-gray-200 dark:border-[#1a1a1a]">
+              <Card className="h-full hover:border-foreground/20 transition-colors cursor-pointer">
                 <CardHeader>
-                  <CardTitle className="text-gray-900 dark:text-white flex items-center justify-between">
+                  <CardTitle className="flex items-center justify-between">
                     {category.name}
-                    <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                    <span className="text-sm font-normal text-muted-foreground">
                       {category.questionCount}개
                     </span>
                   </CardTitle>
-                  <CardDescription className="text-gray-500 dark:text-gray-400">{category.description}</CardDescription>
+                  <CardDescription>{category.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <span className="text-sm text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1">
+                  <span className="text-sm text-foreground hover:underline inline-flex items-center gap-1">
                     질문 보기
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRight className="h-3 w-3" />
                   </span>
                 </CardContent>
               </Card>
@@ -105,26 +109,26 @@ export default async function Home() {
 
       {/* Target Roles Section */}
       <section className="container mx-auto px-4 py-16">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+        <h2 className="text-2xl font-semibold text-foreground mb-8 text-center">
           대상 독자별 면접 질문
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {targetRolesWithCount.map((role) => (
             <Link key={role.name} href={`/questions?role=${encodeURIComponent(role.name)}`}>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full bg-white dark:bg-[#141414] border-gray-200 dark:border-[#1a1a1a]">
+              <Card className="h-full hover:border-foreground/20 transition-colors cursor-pointer">
                 <CardHeader>
-                  <CardTitle className="text-gray-900 dark:text-white flex items-center justify-between">
+                  <CardTitle className="flex items-center justify-between">
                     {role.name}
-                    <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                    <span className="text-sm font-normal text-muted-foreground">
                       {role.questionCount}개
                     </span>
                   </CardTitle>
-                  <CardDescription className="text-gray-500 dark:text-gray-400">{role.description}</CardDescription>
+                  <CardDescription>{role.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <span className="text-sm text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1">
+                  <span className="text-sm text-foreground hover:underline inline-flex items-center gap-1">
                     질문 보기
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRight className="h-3 w-3" />
                   </span>
                 </CardContent>
               </Card>
@@ -134,8 +138,8 @@ export default async function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 dark:border-[#1a1a1a] bg-gray-50 dark:bg-[#0d0d0d] mt-20">
-        <div className="container mx-auto px-4 py-8 text-center text-gray-600 dark:text-gray-400">
+      <footer className="border-t border-border mt-20">
+        <div className="container mx-auto px-4 py-8 text-center text-muted-foreground text-sm">
           <p>&copy; 2024 DevInterview. All rights reserved.</p>
         </div>
       </footer>

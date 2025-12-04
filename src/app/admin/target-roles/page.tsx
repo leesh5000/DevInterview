@@ -41,19 +41,19 @@ export default async function AdminTargetRolesPage() {
   return (
     <main className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">대상 독자 관리</h1>
+        <h1 className="text-2xl font-semibold text-foreground">대상 독자 관리</h1>
         <TargetRoleForm
           trigger={<Button>새 대상 추가</Button>}
         />
       </div>
 
       {targetRolesWithCount.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-muted-foreground">
           <p>아직 생성된 대상 역할이 없습니다.</p>
           <p className="mt-2">새 대상 역할을 추가해보세요.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-card rounded-lg border border-border overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
@@ -69,7 +69,7 @@ export default async function AdminTargetRolesPage() {
                 <TableRow key={role.id}>
                   <TableCell>{role.order}</TableCell>
                   <TableCell className="font-medium">{role.name}</TableCell>
-                  <TableCell className="text-gray-500">
+                  <TableCell className="text-muted-foreground">
                     {role.description || "-"}
                   </TableCell>
                   <TableCell>{role.questionCount}</TableCell>

@@ -40,7 +40,7 @@ export default async function NewQuestionPage() {
 
   return (
     <main className="container mx-auto px-4 py-8 max-w-4xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">새 게시물 작성</h1>
+      <h1 className="text-2xl font-semibold text-foreground mb-8">새 게시물 작성</h1>
       <QuestionForm categories={categories} targetRoles={targetRoles} />
     </main>
   );

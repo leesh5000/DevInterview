@@ -281,10 +281,10 @@ export default function QuestionForm({
       </div>
 
       {/* AI 요약 */}
-      <Card className="border-blue-200 bg-blue-50">
+      <Card className="border-border bg-secondary/50">
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle className="text-lg">AI 요약</CardTitle>
+            <CardTitle className="text-base">AI 요약</CardTitle>
             <Button
               type="button"
               variant="outline"
@@ -309,9 +309,9 @@ export default function QuestionForm({
       </Card>
 
       {/* 추천 강의 */}
-      <Card className="border-green-200 bg-green-50">
+      <Card className="border-border bg-secondary/50">
         <CardHeader>
-          <CardTitle className="text-lg">추천 강의</CardTitle>
+          <CardTitle className="text-base">추천 강의</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {formData.relatedCourses.length > 0 && (
@@ -319,11 +319,11 @@ export default function QuestionForm({
               {formData.relatedCourses.map((course, index) => (
                 <li
                   key={index}
-                  className="flex items-center justify-between bg-white p-2 rounded"
+                  className="flex items-center justify-between bg-card p-3 rounded-md border border-border"
                 >
                   <div>
-                    <p className="font-medium">{course.title}</p>
-                    <p className="text-sm text-gray-500 truncate">
+                    <p className="font-medium text-foreground">{course.title}</p>
+                    <p className="text-sm text-muted-foreground truncate">
                       {course.affiliateUrl}
                     </p>
                   </div>

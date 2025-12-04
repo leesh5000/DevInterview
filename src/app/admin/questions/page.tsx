@@ -29,21 +29,21 @@ export default async function AdminQuestionsPage() {
   return (
     <main className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">게시물 관리</h1>
+        <h1 className="text-2xl font-semibold text-foreground">게시물 관리</h1>
         <Link href="/admin/questions/new">
           <Button>새 게시물 작성</Button>
         </Link>
       </div>
 
       {questions.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-muted-foreground">
           <p>아직 작성된 게시물이 없습니다.</p>
-          <Link href="/admin/questions/new" className="text-blue-600 hover:underline">
+          <Link href="/admin/questions/new" className="text-foreground hover:underline">
             첫 게시물을 작성해보세요
           </Link>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-card rounded-lg border border-border overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
@@ -61,7 +61,7 @@ export default async function AdminQuestionsPage() {
                   <TableCell className="font-medium">
                     <Link
                       href={`/admin/questions/${q.id}/edit`}
-                      className="hover:text-blue-600"
+                      className="hover:underline"
                     >
                       {q.questionTitle.length > 50
                         ? q.questionTitle.substring(0, 50) + "..."
