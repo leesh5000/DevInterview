@@ -28,6 +28,11 @@ docker compose -f docker-compose.infra.yml up -d
 npx prisma generate       # Generate Prisma client after schema changes
 npx prisma migrate dev    # Create and run migrations
 npx prisma db push        # Push schema changes without migration
+
+# Testing (Vitest + React Testing Library)
+npm run test              # Run tests in watch mode
+npm run test:run          # Run tests once
+npm run test:coverage     # Run tests with coverage report
 ```
 
 ## Architecture
@@ -39,6 +44,7 @@ npx prisma db push        # Push schema changes without migration
 - **Theming**: next-themes for dark/light mode support
 - **Markdown**: @uiw/react-md-editor for editing, react-markdown + @tailwindcss/typography for rendering
 - **AI**: OpenAI API (gpt-4o-mini) for generating question summaries
+- **Testing**: Vitest + React Testing Library + jsdom
 
 ### Directory Structure
 - `src/app/` - Next.js App Router pages and API routes
@@ -48,6 +54,7 @@ npx prisma db push        # Push schema changes without migration
 - `src/components/admin/` - Admin-specific components (QuestionForm, MarkdownEditor)
 - `src/lib/` - Utilities (prisma client, auth helpers, openai client)
 - `src/types/` - TypeScript type definitions
+- `src/__tests__/` - Test files (API, components, lib utilities)
 - `prisma/` - Database schema and migrations
 
 ### Key Data Models
