@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { prisma } from "@/lib/prisma";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import ReviewCountBadge from "@/components/ReviewCountBadge";
+import Footer from "@/components/Footer";
 
 export default async function QuestionsPage({
   searchParams,
@@ -132,8 +133,8 @@ export default async function QuestionsPage({
         <div className="mb-8 space-y-4">
           {/* Category Filter */}
           <div>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-3">카테고리:</span>
-            <div className="inline-flex flex-wrap gap-2">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-2 md:inline md:mb-0 md:mr-3">카테고리:</span>
+            <div className="flex flex-wrap gap-2">
               <Link href={buildFilterUrl(undefined, roleFilter)}>
                 <Badge variant={!categorySlug ? "default" : "outline"} className="cursor-pointer">
                   전체 ({totalCount})
@@ -154,8 +155,8 @@ export default async function QuestionsPage({
 
           {/* Target Role Filter */}
           <div>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-3">대상 독자:</span>
-            <div className="inline-flex flex-wrap gap-2">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-2 md:inline md:mb-0 md:mr-3">대상 독자:</span>
+            <div className="flex flex-wrap gap-2">
               <Link href={buildFilterUrl(categorySlug, undefined)}>
                 <Badge variant={!roleFilter ? "default" : "outline"} className="cursor-pointer">
                   전체 ({totalCount})
@@ -251,6 +252,8 @@ export default async function QuestionsPage({
           </div>
         )}
       </main>
+
+      <Footer />
     </div>
   );
 }

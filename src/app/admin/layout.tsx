@@ -3,6 +3,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import LogoutButton from "@/components/admin/LogoutButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import AdminMobileNav from "@/components/admin/AdminMobileNav";
 
 export default async function AdminLayout({
   children,
@@ -24,11 +25,12 @@ export default async function AdminLayout({
       {authenticated && (
         <header className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-50">
           <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-4 lg:gap-8">
               <Link href="/admin" className="text-lg font-semibold text-foreground">
                 DevInterview Admin
               </Link>
-              <nav className="flex gap-6">
+              {/* Desktop Nav */}
+              <nav className="hidden lg:flex gap-6">
                 <Link
                   href="/admin"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -75,12 +77,16 @@ export default async function AdminLayout({
             <div className="flex items-center gap-3">
               <Link
                 href="/"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 사이트 보기
               </Link>
               <ThemeToggle />
-              <LogoutButton />
+              <div className="hidden sm:block">
+                <LogoutButton />
+              </div>
+              {/* Mobile Nav */}
+              <AdminMobileNav pendingCount={pendingCount} />
             </div>
           </div>
         </header>

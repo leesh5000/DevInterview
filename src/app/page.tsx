@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import Footer from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
 
 export default async function Home() {
@@ -137,12 +138,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border mt-20">
-        <div className="container mx-auto px-4 py-8 text-center text-muted-foreground text-sm">
-          <p>&copy; 2024 DevInterview. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

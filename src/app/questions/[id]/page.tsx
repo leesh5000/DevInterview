@@ -11,6 +11,7 @@ import CollapsibleAnswer from "@/components/CollapsibleAnswer";
 import ReviewCountBadge from "@/components/ReviewCountBadge";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import CourseCard from "@/components/CourseCard";
+import Footer from "@/components/Footer";
 
 export default async function QuestionDetailPage({
   params,
@@ -207,12 +208,7 @@ export default async function QuestionDetailPage({
 
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-200 dark:border-[#1a1a1a] bg-gray-50 dark:bg-[#0d0d0d] mt-20">
-        <div className="container mx-auto px-4 py-8 text-center text-gray-600 dark:text-gray-400">
-          <p>&copy; 2024 DevInterview. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

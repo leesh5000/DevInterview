@@ -84,10 +84,15 @@ Required:
 ## Deployment
 
 Production runs on **Vercel + Supabase**:
-- Vercel handles the Next.js app deployment
-- Supabase provides PostgreSQL with PgBouncer connection pooling
-- Run `npx prisma migrate deploy` locally before deployment (Vercel can't connect directly to Supabase for migrations)
+- Vercel handles the Next.js app deployment (region: `icn1` Seoul, configured in `vercel.json`)
+- Supabase provides PostgreSQL with PgBouncer connection pooling (region: `ap-northeast-2` Seoul)
+- Migrations run automatically on Vercel via `prebuild` script (`prisma generate && prisma migrate deploy`)
 - Speed Insights enabled via `@vercel/speed-insights`
+
+### Migration Workflow
+- **Local development**: Use `npx prisma migrate dev --name <name>` to create new migrations
+- **Production**: Migrations deploy automatically on Vercel build
+- **Warning**: Never use `npx prisma db push` for schema changes intended for production - it doesn't create migration files
 
 ## Styling Conventions
 
