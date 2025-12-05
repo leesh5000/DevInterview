@@ -95,3 +95,16 @@ model SuggestionRequest {
   @@index([status])
   @@index([requesterIp, createdAt])
 }
+
+// 강의 링크 클릭 추적
+model CourseClick {
+  id           String   @id @default(uuid())
+  questionId   String
+  affiliateUrl String
+  clickCount   Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([questionId, affiliateUrl])
+  @@index([questionId])
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -31,8 +31,27 @@ export default function CategoryCombobox({
   onChange,
 }: CategoryComboboxProps) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const selectedCategory = categories.find((cat) => cat.id === value);
+
+  // Hydration 에러 방지: 클라이언트 마운트 전에는 Popover 없이 렌더링
+  if (!mounted) {
+    return (
+      <Button
+        variant="outline"
+        className="w-full justify-between"
+        disabled
+      >
+        {selectedCategory ? selectedCategory.name : "대주제 검색..."}
+        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+      </Button>
+    );
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

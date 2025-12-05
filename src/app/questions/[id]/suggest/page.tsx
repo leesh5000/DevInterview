@@ -64,7 +64,7 @@ export default async function SuggestPage({
 
         {/* Info Card */}
         <Card className="mb-6 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30">
-          <CardContent className="pt-6">
+          <CardContent className="py-4">
             <h3 className="font-semibold text-blue-700 dark:text-blue-300 mb-2">
               수정 제안 안내
             </h3>

@@ -61,6 +61,8 @@ npm run test:coverage     # Run tests with coverage report
 - **Category**: Interview question categories (database, network, etc.)
 - **TargetRole**: Target audience roles (backend developer, frontend developer, etc.)
 - **InterviewQuestion**: Questions with markdown body/answer, target roles, tags, AI summary, and related courses
+- **SuggestionRequest**: Community edit suggestions for questions (pending/approved/rejected status, IP-based rate limiting)
+- **CourseClick**: Tracks affiliate link clicks per question (upsert pattern for incrementing counts)
 
 ### Authentication
 Simple cookie-based admin auth using `ADMIN_PASSWORD` environment variable. Auth logic in `src/lib/auth.ts`.
@@ -69,6 +71,7 @@ Simple cookie-based admin auth using `ADMIN_PASSWORD` environment variable. Auth
 - GET endpoints are public
 - POST/PUT/DELETE endpoints check `isAuthenticated()` and return 401 if unauthorized
 - All question/category mutations require admin authentication
+- Suggestion submissions (`POST /api/suggestions`) are public but rate-limited by IP (1 request per minute)
 
 ## Environment Variables
 
@@ -104,9 +107,24 @@ Design system follows Vercel's minimalist aesthetic with CSS variables defined i
 - Cards: `bg-card border border-border rounded-lg`
 - Headers: `bg-background/80 backdrop-blur-sm border-b border-border`
 
+## Common Patterns
+
+### Hydration Safety for Client Components
+When using Radix UI components (Popover, Dialog, etc.) that generate IDs, use the `mounted` state pattern to prevent hydration mismatches:
+```tsx
+const [mounted, setMounted] = useState(false);
+useEffect(() => { setMounted(true); }, []);
+if (!mounted) return <FallbackUI />;
+return <RadixComponent />;
+```
+
+### Affiliate Link Click Tracking
+Course links use `CourseCard` component with click tracking via `/api/course-clicks` (POST to increment, GET to fetch counts).
+
 ## Notes
 
 - The app uses Korean for all user-facing content
 - Markdown content is stored in `questionBody` (question details) and `answerContent` (answer) fields
-- Related courses support affiliate URLs (primarily for Inflearn links)
+- Related courses support affiliate URLs with thumbnails (auto-fetched via OG image API at `/api/og-image`)
 - Questions filtering supports combining category and target role filters via URL params (`?category=xxx&role=yyy`)
+- Community suggestion workflow: User submits edit → Admin reviews in `/admin/suggestions` → Approve (applies changes, increments `reviewCount`) or Reject

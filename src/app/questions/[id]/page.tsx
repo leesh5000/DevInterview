@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, MessageSquarePlus } from "lucide-react";
+import { ArrowLeft, MessageSquarePlus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,6 +10,7 @@ import MarkdownPreview from "@/components/MarkdownPreview";
 import CollapsibleAnswer from "@/components/CollapsibleAnswer";
 import ReviewCountBadge from "@/components/ReviewCountBadge";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import CourseCard from "@/components/CourseCard";
 
 export default async function QuestionDetailPage({
   params,
@@ -42,6 +43,16 @@ export default async function QuestionDetailPage({
   const questionIndex = questionsInCategory.findIndex((q) => q.id === id) + 1;
 
   const relatedCourses = question.relatedCourses as unknown as RelatedCourse[];
+
+  // 강의 클릭 수 조회
+  const courseClicks = await prisma.courseClick.findMany({
+    where: { questionId: id },
+    select: { affiliateUrl: true, clickCount: true },
+  });
+  const clickCountMap: Record<string, number> = {};
+  courseClicks.forEach((click) => {
+    clickCountMap[click.affiliateUrl] = click.clickCount;
+  });
 
   // 본문에서 제목이 중복되는 경우 제거 및 이모지 추가
   let questionBodyContent = question.questionBody;
@@ -86,9 +97,12 @@ export default async function QuestionDetailPage({
 
         {/* Category Title */}
         <div className="mb-4">
-          <h2 className="text-2xl font-bold text-gray-500 dark:text-gray-400">
+          <Link
+            href={`/questions?category=${question.category.slug}`}
+            className="text-2xl font-bold text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
             {question.category.name}
-          </h2>
+          </Link>
         </div>
 
         {/* Question Title */}
@@ -174,24 +188,19 @@ export default async function QuestionDetailPage({
               <h3 className="font-semibold text-green-700 dark:text-green-300 mb-3">
                 이 주제를 더 공부하고 싶나요?
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                 이 링크를 통해 구매하시면 제가 수익을 받을 수 있어요. 🤗
               </p>
-              <ul className="space-y-2">
+              <div className="space-y-3">
                 {relatedCourses.map((course, index) => (
-                  <li key={index}>
-                    <a
-                      href={course.affiliateUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
-                    >
-                      {course.title}
-                      <ArrowRight className="h-4 w-4" />
-                    </a>
-                  </li>
+                  <CourseCard
+                    key={index}
+                    course={course}
+                    questionId={id}
+                    initialClickCount={clickCountMap[course.affiliateUrl] || 0}
+                  />
                 ))}
-              </ul>
+              </div>
             </CardContent>
           </Card>
         )}

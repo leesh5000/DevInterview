@@ -49,7 +49,7 @@ export default function QuestionForm({
   });
 
   const [newTag, setNewTag] = useState("");
-  const [newCourse, setNewCourse] = useState({ title: "", affiliateUrl: "" });
+  const [newCourse, setNewCourse] = useState({ title: "", affiliateUrl: "", thumbnailUrl: "" });
   const [loading, setLoading] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
 
@@ -161,11 +161,16 @@ export default function QuestionForm({
   // 강의 추가
   const addCourse = () => {
     if (newCourse.title && newCourse.affiliateUrl) {
+      const courseToAdd = {
+        title: newCourse.title,
+        affiliateUrl: newCourse.affiliateUrl,
+        ...(newCourse.thumbnailUrl && { thumbnailUrl: newCourse.thumbnailUrl }),
+      };
       setFormData((prev) => ({
         ...prev,
-        relatedCourses: [...prev.relatedCourses, { ...newCourse }],
+        relatedCourses: [...prev.relatedCourses, courseToAdd],
       }));
-      setNewCourse({ title: "", affiliateUrl: "" });
+      setNewCourse({ title: "", affiliateUrl: "", thumbnailUrl: "" });
     }
   };
 
@@ -321,11 +326,16 @@ export default function QuestionForm({
                   key={index}
                   className="flex items-center justify-between bg-card p-3 rounded-md border border-border"
                 >
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <p className="font-medium text-foreground">{course.title}</p>
                     <p className="text-sm text-muted-foreground truncate">
                       {course.affiliateUrl}
                     </p>
+                    {course.thumbnailUrl && (
+                      <p className="text-xs text-muted-foreground truncate">
+                        썸네일: {course.thumbnailUrl}
+                      </p>
+                    )}
                   </div>
                   <Button
                     type="button"
@@ -339,27 +349,41 @@ export default function QuestionForm({
               ))}
             </ul>
           )}
-          <div className="flex gap-2">
-            <Input
-              placeholder="강의명"
-              value={newCourse.title}
-              onChange={(e) =>
-                setNewCourse((prev) => ({ ...prev, title: e.target.value }))
-              }
-            />
-            <Input
-              placeholder="인프런 제휴 링크"
-              value={newCourse.affiliateUrl}
-              onChange={(e) =>
-                setNewCourse((prev) => ({
-                  ...prev,
-                  affiliateUrl: e.target.value,
-                }))
-              }
-            />
-            <Button type="button" variant="outline" onClick={addCourse}>
-              추가
-            </Button>
+          <div className="space-y-2">
+            <div className="flex gap-2">
+              <Input
+                placeholder="강의명"
+                value={newCourse.title}
+                onChange={(e) =>
+                  setNewCourse((prev) => ({ ...prev, title: e.target.value }))
+                }
+              />
+              <Input
+                placeholder="인프런 제휴 링크"
+                value={newCourse.affiliateUrl}
+                onChange={(e) =>
+                  setNewCourse((prev) => ({
+                    ...prev,
+                    affiliateUrl: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="flex gap-2">
+              <Input
+                placeholder="썸네일 URL (선택사항, 비워두면 자동 추출)"
+                value={newCourse.thumbnailUrl}
+                onChange={(e) =>
+                  setNewCourse((prev) => ({
+                    ...prev,
+                    thumbnailUrl: e.target.value,
+                  }))
+                }
+              />
+              <Button type="button" variant="outline" onClick={addCourse}>
+                추가
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

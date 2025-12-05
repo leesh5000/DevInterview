@@ -1,6 +1,7 @@
 export interface RelatedCourse {
   title: string;
   affiliateUrl: string;
+  thumbnailUrl?: string;
 }
 
 export interface Category {
