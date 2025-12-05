@@ -36,10 +36,17 @@ export default function CategoryForm({ category, trigger }: CategoryFormProps) {
   const generateSlug = (name: string) => {
     return name
       .toLowerCase()
-      .replace(/[^a-z0-9가-힣\s-]/g, "")
+      .replace(/[^a-z0-9\s-]/g, "")
       .replace(/\s+/g, "-")
       .replace(/-+/g, "-")
-      .trim();
+      .replace(/^-+|-+$/g, "");
+  };
+
+  const sanitizeSlug = (slug: string) => {
+    return slug
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, "")
+      .replace(/-+/g, "-");
   };
 
   const handleNameChange = (name: string) => {
@@ -115,7 +122,7 @@ export default function CategoryForm({ category, trigger }: CategoryFormProps) {
               id="slug"
               value={formData.slug}
               onChange={(e) =>
-                setFormData((prev) => ({ ...prev, slug: e.target.value }))
+                setFormData((prev) => ({ ...prev, slug: sanitizeSlug(e.target.value) }))
               }
               placeholder="예: database"
             />
