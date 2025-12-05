@@ -73,9 +73,18 @@ Simple cookie-based admin auth using `ADMIN_PASSWORD` environment variable. Auth
 ## Environment Variables
 
 Required:
-- `DATABASE_URL` - PostgreSQL connection string
+- `DATABASE_URL` - PostgreSQL connection string (with `?pgbouncer=true&connection_limit=1` for Supabase)
+- `DIRECT_URL` - Direct PostgreSQL connection for migrations (Supabase Session mode)
 - `ADMIN_PASSWORD` - Admin login password
 - `OPENAI_API_KEY` - For AI summary generation
+
+## Deployment
+
+Production runs on **Vercel + Supabase**:
+- Vercel handles the Next.js app deployment
+- Supabase provides PostgreSQL with PgBouncer connection pooling
+- Run `npx prisma migrate deploy` locally before deployment (Vercel can't connect directly to Supabase for migrations)
+- Speed Insights enabled via `@vercel/speed-insights`
 
 ## Styling Conventions
 

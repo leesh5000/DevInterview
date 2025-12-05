@@ -50,9 +50,48 @@ model InterviewQuestion {
   // 상태
   viewCount      Int      @default(0)
   isPublished    Boolean  @default(false)
+  reviewCount    Int      @default(0)  // 커뮤니티 검수 횟수
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
+  // 관계
+  suggestions    SuggestionRequest[]
+
   @@index([categoryId])
   @@index([isPublished])
+}
+
+// 수정 제안 상태
+enum SuggestionStatus {
+  PENDING   // 대기 중
+  APPROVED  // 승인됨
+  REJECTED  // 반려됨
+}
+
+// 수정 제안 모델
+model SuggestionRequest {
+  id            String   @id @default(uuid())
+  questionId    String
+  question      InterviewQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  // 수정 내용 (본문, 답변만)
+  questionBody  String   @db.Text
+  answerContent String   @db.Text
+
+  // 수정 사유 (필수)
+  reason        String   @db.Text
+
+  // 요청자 정보
+  requesterIp   String
+
+  // 상태 관리
+  status        SuggestionStatus @default(PENDING)
+  adminComment  String?  @db.Text  // 반려 사유 (선택)
+
+  createdAt     DateTime @default(now())
+  reviewedAt    DateTime?
+
+  @@index([questionId])
+  @@index([status])
+  @@index([requesterIp, createdAt])
 }

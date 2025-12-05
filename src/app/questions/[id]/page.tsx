@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, MessageSquarePlus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 import { RelatedCourse } from "@/types";
 import MarkdownPreview from "@/components/MarkdownPreview";
 import CollapsibleAnswer from "@/components/CollapsibleAnswer";
+import ReviewCountBadge from "@/components/ReviewCountBadge";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default async function QuestionDetailPage({
@@ -112,7 +114,7 @@ export default async function QuestionDetailPage({
 
           {/* Target Roles */}
           {question.targetRoles.length > 0 && (
-            <div className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               <span className="font-medium">대상 독자:</span>{" "}
               {question.targetRoles.map((role, index) => (
                 <span key={role}>
@@ -127,6 +129,20 @@ export default async function QuestionDetailPage({
               ))}
             </div>
           )}
+
+          {/* Action Bar: Suggestion Button + Review Count + View Count */}
+          <div className="flex flex-wrap items-center gap-4">
+            <Link href={`/questions/${id}/suggest`}>
+              <Button variant="outline" size="sm" className="gap-2">
+                <MessageSquarePlus className="h-4 w-4" />
+                의견 제시
+              </Button>
+            </Link>
+            <ReviewCountBadge count={question.reviewCount} />
+            <span className="text-gray-500 text-sm">
+              조회수 {question.viewCount + 1}
+            </span>
+          </div>
         </div>
 
         {/* Question Body (의도, 평가포인트) */}
@@ -180,10 +196,6 @@ export default async function QuestionDetailPage({
           </Card>
         )}
 
-        {/* View Count */}
-        <div className="mt-8 text-gray-500 text-sm">
-          조회수 {question.viewCount + 1}
-        </div>
       </main>
 
       {/* Footer */}

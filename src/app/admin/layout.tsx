@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { isAuthenticated } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import LogoutButton from "@/components/admin/LogoutButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -9,6 +10,14 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const authenticated = await isAuthenticated();
+
+  // 대기 중인 수정 제안 수 조회
+  let pendingCount = 0;
+  if (authenticated) {
+    pendingCount = await prisma.suggestionRequest.count({
+      where: { status: "PENDING" },
+    });
+  }
 
   return (
     <div className="min-h-screen bg-background transition-colors">
@@ -43,6 +52,17 @@ export default async function AdminLayout({
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   게시물 관리
+                </Link>
+                <Link
+                  href="/admin/suggestions"
+                  className="relative text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  수정 제안
+                  {pendingCount > 0 && (
+                    <span className="absolute -top-2 -right-4 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {pendingCount > 99 ? "99+" : pendingCount}
+                    </span>
+                  )}
                 </Link>
                 <Link
                   href="/admin/questions/new"

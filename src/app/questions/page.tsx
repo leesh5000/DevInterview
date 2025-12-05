@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { prisma } from "@/lib/prisma";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import ReviewCountBadge from "@/components/ReviewCountBadge";
 
 export default async function QuestionsPage({
   searchParams,
@@ -234,7 +235,10 @@ export default async function QuestionsPage({
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-                      <span>조회수 {q.viewCount}</span>
+                      <div className="flex items-center gap-4">
+                        <span>조회수 {q.viewCount}</span>
+                        <ReviewCountBadge count={q.reviewCount} />
+                      </div>
                       <span className="inline-flex items-center gap-1">
                         자세히 보기
                         <ArrowRight className="h-4 w-4" />
