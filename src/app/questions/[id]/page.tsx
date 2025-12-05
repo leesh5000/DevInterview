@@ -35,14 +35,6 @@ export default async function QuestionDetailPage({
     data: { viewCount: { increment: 1 } },
   });
 
-  // 같은 카테고리의 질문 번호 계산
-  const questionsInCategory = await prisma.interviewQuestion.findMany({
-    where: { categoryId: question.categoryId, isPublished: true },
-    orderBy: { createdAt: "asc" },
-    select: { id: true },
-  });
-  const questionIndex = questionsInCategory.findIndex((q) => q.id === id) + 1;
-
   const relatedCourses = question.relatedCourses as unknown as RelatedCourse[];
 
   // 강의 클릭 수 조회
@@ -109,7 +101,7 @@ export default async function QuestionDetailPage({
         {/* Question Title */}
         <div className="mb-6">
           <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-4 leading-relaxed">
-            Q{questionIndex}. {question.questionTitle}
+            {question.questionTitle}
           </h1>
 
           {/* Tags */}
