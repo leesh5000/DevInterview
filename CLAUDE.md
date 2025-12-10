@@ -162,6 +162,14 @@ const clickStats = await prisma.courseClick.groupBy({
 ### Form State Persistence
 `useFormPersistence` hook in `src/hooks/` saves form data to sessionStorage/localStorage to prevent data loss on accidental navigation or refresh. Used in QuestionForm and SuggestionForm.
 
+### Expandable Filter Lists
+Questions page uses `ExpandableFilterList` component for mobile-friendly filter UI:
+- Initially shows limited items (default: 5)
+- "더보기" button loads more items incrementally (default: 10 at a time)
+- "접기" button collapses back to initial count when fully expanded
+- Client component with URL building logic inside (functions can't be passed from server components)
+- Props: `items`, `selectedValue`, `totalCount`, `filterType`, `currentCategorySlug`, `currentRoleFilter`
+
 ## Notes
 
 - The app uses Korean for all user-facing content
