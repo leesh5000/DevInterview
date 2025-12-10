@@ -13,6 +13,7 @@ import {
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import DeleteButton from "@/components/admin/DeleteButton";
+import { ExportButton, ImportButton } from "@/components/admin/QuestionExportImport";
 
 export default async function AdminQuestionsPage() {
   const authenticated = await isAuthenticated();
@@ -31,6 +32,8 @@ export default async function AdminQuestionsPage() {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-semibold text-foreground">게시물 관리</h1>
         <div className="flex gap-2">
+          <ExportButton />
+          <ImportButton />
           <Link href="/admin/questions/bulk">
             <Button variant="outline">일괄 등록</Button>
           </Link>

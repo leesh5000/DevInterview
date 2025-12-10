@@ -30,7 +30,7 @@ import { Category, TargetRole } from "@/types";
 import { parseQuestions, ParsedQuestion, RelatedCourse } from "@/lib/bulk-parser";
 import CategoryCombobox from "./CategoryCombobox";
 import TargetRoleSelector from "./TargetRoleSelector";
-import { ChevronDown, ChevronRight, Plus, X, Search, ChevronsUpDown } from "lucide-react";
+import { ChevronDown, ChevronRight, Plus, X, Search, ChevronsUpDown, Trash2 } from "lucide-react";
 
 interface Course {
   id: string;
@@ -207,6 +207,11 @@ export default function BulkQuestionForm({
           : q
       )
     );
+  };
+
+  // 질문 제거
+  const removeQuestion = (index: number) => {
+    setParsedQuestions((prev) => prev.filter((q) => q.index !== index));
   };
 
   // 연관 강의 추가
@@ -392,6 +397,7 @@ export default function BulkQuestionForm({
                   onRemoveCourse={removeRelatedCourse}
                   onCategoriesChange={setCategories}
                   onTargetRolesChange={setTargetRoles}
+                  onRemove={removeQuestion}
                 />
               ))}
             </CardContent>
@@ -426,6 +432,7 @@ function QuestionPreviewCard({
   onRemoveCourse,
   onCategoriesChange,
   onTargetRolesChange,
+  onRemove,
 }: {
   question: QuestionWithMapping;
   categories: Category[];
@@ -440,6 +447,7 @@ function QuestionPreviewCard({
   onRemoveCourse: (questionIndex: number, courseIndex: number) => void;
   onCategoriesChange: (categories: Category[]) => void;
   onTargetRolesChange: (targetRoles: TargetRole[]) => void;
+  onRemove: (index: number) => void;
 }) {
   const [newTag, setNewTag] = useState("");
   const [editingTag, setEditingTag] = useState<string | null>(null);
@@ -571,12 +579,23 @@ function QuestionPreviewCard({
     <Collapsible open={question.isExpanded}>
       <Card className="border-border bg-secondary/30">
         <CardContent className="pt-4 space-y-3">
-          {/* 질문 번호 */}
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-base">#{question.index + 1}</span>
-            <span className="text-sm text-muted-foreground">
-              (원본 카테고리: {question.categoryName})
-            </span>
+          {/* 질문 번호 및 삭제 버튼 */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-base">#{question.index + 1}</span>
+              <span className="text-sm text-muted-foreground">
+                (원본 카테고리: {question.categoryName})
+              </span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onRemove(question.index)}
+              className="text-muted-foreground hover:text-red-500"
+              title="이 질문 제거"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
           </div>
 
           {/* 카테고리 선택 */}

@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import ReviewCountBadge from "@/components/ReviewCountBadge";
 import Footer from "@/components/Footer";
+import ExpandableFilterList from "@/components/ExpandableFilterList";
 
 export default async function QuestionsPage({
   searchParams,
@@ -101,14 +102,6 @@ export default async function QuestionsPage({
     },
   });
 
-  // 필터 URL 생성 헬퍼
-  const buildFilterUrl = (newCategory?: string, newRole?: string) => {
-    const params = new URLSearchParams();
-    if (newCategory) params.set("category", newCategory);
-    if (newRole) params.set("role", newRole);
-    return `/questions${params.toString() ? `?${params.toString()}` : ""}`;
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] transition-colors">
       {/* Header */}
@@ -134,45 +127,37 @@ export default async function QuestionsPage({
           {/* Category Filter */}
           <div>
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-2 md:inline md:mb-0 md:mr-3">카테고리:</span>
-            <div className="flex flex-wrap gap-2">
-              <Link href={buildFilterUrl(undefined, roleFilter)}>
-                <Badge variant={!categorySlug ? "default" : "outline"} className="cursor-pointer">
-                  전체 ({totalCount})
-                </Badge>
-              </Link>
-              {categories.map((cat) => (
-                <Link key={cat.id} href={buildFilterUrl(cat.slug, roleFilter)}>
-                  <Badge
-                    variant={categorySlug === cat.slug ? "default" : "outline"}
-                    className="cursor-pointer"
-                  >
-                    {cat.name} ({categoryCountMap[cat.slug] || 0})
-                  </Badge>
-                </Link>
-              ))}
-            </div>
+            <ExpandableFilterList
+              items={categories.map((cat) => ({
+                id: cat.id,
+                label: cat.name,
+                value: cat.slug,
+                count: categoryCountMap[cat.slug] || 0,
+              }))}
+              selectedValue={categorySlug}
+              totalCount={totalCount}
+              filterType="category"
+              currentCategorySlug={categorySlug}
+              currentRoleFilter={roleFilter}
+            />
           </div>
 
           {/* Target Role Filter */}
           <div>
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-2 md:inline md:mb-0 md:mr-3">대상 독자:</span>
-            <div className="flex flex-wrap gap-2">
-              <Link href={buildFilterUrl(categorySlug, undefined)}>
-                <Badge variant={!roleFilter ? "default" : "outline"} className="cursor-pointer">
-                  전체 ({totalCount})
-                </Badge>
-              </Link>
-              {targetRoles.map((role) => (
-                <Link key={role.id} href={buildFilterUrl(categorySlug, role.name)}>
-                  <Badge
-                    variant={roleFilter === role.name ? "default" : "outline"}
-                    className="cursor-pointer"
-                  >
-                    {role.name} ({roleCountMap[role.name] || 0})
-                  </Badge>
-                </Link>
-              ))}
-            </div>
+            <ExpandableFilterList
+              items={targetRoles.map((role) => ({
+                id: role.id,
+                label: role.name,
+                value: role.name,
+                count: roleCountMap[role.name] || 0,
+              }))}
+              selectedValue={roleFilter}
+              totalCount={totalCount}
+              filterType="role"
+              currentCategorySlug={categorySlug}
+              currentRoleFilter={roleFilter}
+            />
           </div>
 
           {/* Active Filters Summary */}

@@ -134,6 +134,31 @@ Admin can paste formatted text at `/admin/questions/bulk` to register multiple q
 - Each question's category is manually mapped via dropdown in the preview UI
 - Target roles can be set globally or per-question
 
+### JSON Export/Import
+Admin can export all questions as JSON and import them back for backup/migration:
+- Export API: `GET /api/questions/export` - returns all questions with `categorySlug` for portability
+- Import API: `POST /api/questions/import` - accepts `{ questions: [...] }` and bulk creates via Prisma transaction
+- UI components in `src/components/admin/QuestionExportImport.tsx`
+- **Note**: When importing `relatedCourses` (Prisma Json field), use double cast: `as unknown as Prisma.InputJsonValue`
+
+### Horizontal Scroll Sections
+Homepage uses horizontal scroll for categories, target roles, and popular courses:
+- Container: `overflow-x-auto scrollbar-hide`
+- Inner wrapper: `flex gap-4 px-4 min-w-max mx-auto w-fit`
+- Cards: `flex-shrink-0` with fixed width
+- `.scrollbar-hide` utility defined in `globals.css` (hides scrollbar across all browsers)
+
+### Popular Courses Aggregation
+Homepage displays top 5 courses by click count using CourseClick aggregation:
+```typescript
+const clickStats = await prisma.courseClick.groupBy({
+  by: ['affiliateUrl'],
+  _sum: { clickCount: true },
+  orderBy: { _sum: { clickCount: 'desc' } },
+  take: 5,
+});
+```
+
 ### Form State Persistence
 `useFormPersistence` hook in `src/hooks/` saves form data to sessionStorage/localStorage to prevent data loss on accidental navigation or refresh. Used in QuestionForm and SuggestionForm.
 
