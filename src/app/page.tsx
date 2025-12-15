@@ -130,7 +130,7 @@ export default async function Home() {
       {popularCourses.length > 0 && (
         <section className="py-12 bg-secondary/30">
           <div className="container mx-auto px-4">
-            <h2 className="text-xl font-semibold text-foreground mb-6 flex items-center gap-2">
+            <h2 className="text-xl font-semibold text-foreground mb-6 flex items-center justify-center gap-2">
               <Flame className="h-5 w-5 text-orange-500" />
               지금 뜨는 인기 강의
             </h2>
@@ -143,7 +143,7 @@ export default async function Home() {
       {newCourses.length > 0 && (
         <section className="py-12">
           <div className="container mx-auto px-4">
-            <h2 className="text-xl font-semibold text-foreground mb-6 flex items-center gap-2">
+            <h2 className="text-xl font-semibold text-foreground mb-6 flex items-center justify-center gap-2">
               <Sparkles className="h-5 w-5 text-blue-500" />
               신규 강의
             </h2>
