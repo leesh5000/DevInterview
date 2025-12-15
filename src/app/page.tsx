@@ -46,12 +46,12 @@ export default async function Home() {
     })
   );
 
-  // 인기 강의 조회 (전체 기간 클릭 수 기준)
+  // 인기 강의 조회 (전체 기간 클릭 수 기준, 최대 20개)
   const clickStats = await prisma.courseClick.groupBy({
     by: ["affiliateUrl"],
     _sum: { clickCount: true },
     orderBy: { _sum: { clickCount: "desc" } },
-    take: 5,
+    take: 20,
   });
 
   const popularCourses = clickStats.length > 0
@@ -69,10 +69,10 @@ export default async function Home() {
       })
     : [];
 
-  // 신규 강의 조회 (최근 등록순)
+  // 신규 강의 조회 (최근 등록순, 최대 20개)
   const newCourses = await prisma.course.findMany({
     orderBy: { createdAt: "desc" },
-    take: 5,
+    take: 20,
   });
 
   return (
