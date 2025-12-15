@@ -178,6 +178,18 @@ Questions page uses `ExpandableFilterList` component for mobile-friendly filter 
 - Client component with URL building logic inside (functions can't be passed from server components)
 - Props: `items`, `selectedValue`, `totalCount`, `filterType`, `currentCategorySlug`, `currentRoleFilter`
 
+### SEO Implementation
+SEO is configured via Next.js Metadata API with constants in `src/lib/seo.ts`:
+- **Global metadata**: `layout.tsx` defines `metadataBase`, OG/Twitter cards, keywords, robots directives
+- **Dynamic metadata**: `generateMetadata()` in questions list and detail pages
+- **Sitemap**: `src/app/sitemap.ts` generates dynamic sitemap (homepage, categories, all published questions)
+- **Robots**: `src/app/robots.ts` blocks `/admin/` and `/api/` from crawlers
+- **JSON-LD**: Organization schema on homepage, FAQPage schema on question details
+- **Canonical URL**: `https://devinterview.site` (non-www), www redirects via `vercel.json`
+- **OG Image**: Default image at `public/og-default.png` (1200x630px)
+
+Search Console verification codes go in `layout.tsx` metadata.verification (Google, Naver).
+
 ## Notes
 
 - The app uses Korean for all user-facing content
