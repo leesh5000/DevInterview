@@ -3,6 +3,7 @@ import { ArrowRight, Flame, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CourseCarousel } from "@/components/CourseCarousel";
+import { Carousel } from "@/components/Carousel";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Footer from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
@@ -110,16 +111,16 @@ export default async function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-24 text-center">
-        <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 tracking-tight">
+      <section className="container mx-auto px-4 py-12 md:py-24 text-center">
+        <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 md:mb-6 tracking-tight">
           개발자 면접, 확실하게 준비하세요
         </h1>
-        <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-sm md:text-lg text-muted-foreground mb-6 md:mb-10 max-w-2xl mx-auto leading-relaxed">
           면접 질문과 모범 답안, 그리고 실력을 키워줄 추천 강의까지
           한 곳에서 확인하세요.
         </p>
         <Link href="/questions">
-          <Button size="lg" className="gap-2">
+          <Button size="default" className="gap-2 md:h-11 md:px-8">
             면접 질문 보기
             <ArrowRight className="h-4 w-4" />
           </Button>
@@ -128,10 +129,10 @@ export default async function Home() {
 
       {/* Popular Courses Section */}
       {popularCourses.length > 0 && (
-        <section className="py-12 bg-secondary/30">
+        <section className="py-6 md:py-12 bg-secondary/30">
           <div className="container mx-auto px-4">
-            <h2 className="text-xl font-semibold text-foreground mb-6 flex items-center justify-center gap-2">
-              <Flame className="h-5 w-5 text-orange-500" />
+            <h2 className="text-lg md:text-xl font-semibold text-foreground mb-4 md:mb-6 flex items-center justify-center gap-2">
+              <Flame className="h-4 w-4 md:h-5 md:w-5 text-orange-500" />
               지금 뜨는 인기 강의
             </h2>
             <CourseCarousel courses={popularCourses} intervalMs={4000} />
@@ -141,10 +142,10 @@ export default async function Home() {
 
       {/* New Courses Section */}
       {newCourses.length > 0 && (
-        <section className="py-12">
+        <section className="py-6 md:py-12">
           <div className="container mx-auto px-4">
-            <h2 className="text-xl font-semibold text-foreground mb-6 flex items-center justify-center gap-2">
-              <Sparkles className="h-5 w-5 text-blue-500" />
+            <h2 className="text-lg md:text-xl font-semibold text-foreground mb-4 md:mb-6 flex items-center justify-center gap-2">
+              <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-blue-500" />
               신규 강의
             </h2>
             <CourseCarousel courses={newCourses} intervalMs={5000} initialDelayMs={2500} />
@@ -153,27 +154,26 @@ export default async function Home() {
       )}
 
       {/* Categories Section */}
-      <section className="py-16">
+      <section className="py-8 md:py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-semibold text-foreground mb-8 text-center">
+          <h2 className="text-xl md:text-2xl font-semibold text-foreground mb-4 md:mb-8 text-center">
             카테고리별 면접 질문
           </h2>
-          <div className="overflow-x-auto scrollbar-hide -mx-4">
-            <div className="flex gap-4 px-4 pb-4 min-w-max justify-center">
+          <Carousel intervalMs={6000} initialDelayMs={1000}>
             {categoriesWithCount.map((category) => (
-              <Link key={category.slug} href={`/questions?category=${category.slug}`}>
-                <Card className="w-72 h-full hover:border-foreground/20 transition-colors cursor-pointer flex-shrink-0">
+              <Link key={category.slug} href={`/questions?category=${category.slug}`} className="flex-shrink-0">
+                <Card className="w-56 md:w-72 h-full hover:border-foreground/20 transition-colors cursor-pointer">
                   <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
+                    <CardTitle className="flex items-center justify-between text-sm md:text-base">
                       {category.name}
-                      <span className="text-sm font-normal text-muted-foreground">
+                      <span className="text-xs md:text-sm font-normal text-muted-foreground">
                         {category.questionCount}개
                       </span>
                     </CardTitle>
-                    <CardDescription className="line-clamp-2">{category.description}</CardDescription>
+                    <CardDescription className="line-clamp-2 text-xs md:text-sm">{category.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <span className="text-sm text-foreground hover:underline inline-flex items-center gap-1">
+                    <span className="text-xs md:text-sm text-foreground hover:underline inline-flex items-center gap-1">
                       질문 보기
                       <ArrowRight className="h-3 w-3" />
                     </span>
@@ -181,33 +181,31 @@ export default async function Home() {
                 </Card>
               </Link>
             ))}
-            </div>
-          </div>
+          </Carousel>
         </div>
       </section>
 
       {/* Target Roles Section */}
-      <section className="py-16">
+      <section className="py-8 md:py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-semibold text-foreground mb-8 text-center">
+          <h2 className="text-xl md:text-2xl font-semibold text-foreground mb-4 md:mb-8 text-center">
             대상 독자별 면접 질문
           </h2>
-          <div className="overflow-x-auto scrollbar-hide -mx-4">
-            <div className="flex gap-4 px-4 pb-4 min-w-max justify-center">
+          <Carousel intervalMs={7000} initialDelayMs={3500}>
             {targetRolesWithCount.map((role) => (
-              <Link key={role.name} href={`/questions?role=${encodeURIComponent(role.name)}`}>
-                <Card className="w-64 h-full hover:border-foreground/20 transition-colors cursor-pointer flex-shrink-0">
+              <Link key={role.name} href={`/questions?role=${encodeURIComponent(role.name)}`} className="flex-shrink-0">
+                <Card className="w-48 md:w-64 h-full hover:border-foreground/20 transition-colors cursor-pointer">
                   <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
+                    <CardTitle className="flex items-center justify-between text-sm md:text-base">
                       {role.name}
-                      <span className="text-sm font-normal text-muted-foreground">
+                      <span className="text-xs md:text-sm font-normal text-muted-foreground">
                         {role.questionCount}개
                       </span>
                     </CardTitle>
-                    <CardDescription className="line-clamp-2">{role.description}</CardDescription>
+                    <CardDescription className="line-clamp-2 text-xs md:text-sm">{role.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <span className="text-sm text-foreground hover:underline inline-flex items-center gap-1">
+                    <span className="text-xs md:text-sm text-foreground hover:underline inline-flex items-center gap-1">
                       질문 보기
                       <ArrowRight className="h-3 w-3" />
                     </span>
@@ -215,8 +213,7 @@ export default async function Home() {
                 </Card>
               </Link>
             ))}
-            </div>
-          </div>
+          </Carousel>
         </div>
       </section>
 
