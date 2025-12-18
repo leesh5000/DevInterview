@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Calendar, Newspaper } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { ArrowRight, Newspaper } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Footer from "@/components/Footer";
 import { SEO_CONFIG } from "@/lib/seo";
+import { NewsDatePicker } from "@/components/NewsDatePicker";
 import {
   Card,
   CardContent,
@@ -39,7 +39,15 @@ export default async function NewsPage({
   searchParams: Promise<{ date?: string }>;
 }) {
   const params = await searchParams;
-  const selectedDate = params.date;
+
+  // KST 기준 오늘 날짜
+  const now = new Date();
+  const kstOffset = 9 * 60 * 60 * 1000;
+  const kstDate = new Date(now.getTime() + kstOffset);
+  const today = kstDate.toISOString().split("T")[0];
+
+  // 날짜 파라미터가 없으면 오늘 날짜를 기본값으로
+  const selectedDate = params.date ?? today;
 
   // 모든 뉴스 조회
   const allNews = await prisma.dailyNews.findMany({
@@ -47,14 +55,14 @@ export default async function NewsPage({
     take: 200,
   });
 
-  // 날짜별로 그룹화하여 날짜 목록과 개수 추출
-  const dateCountMap: Record<string, number> = {};
+  // 날짜별로 그룹화하여 날짜 목록 추출
+  const dateSet = new Set<string>();
   allNews.forEach((item) => {
     const dateKey = item.displayDate.toISOString().split("T")[0];
-    dateCountMap[dateKey] = (dateCountMap[dateKey] || 0) + 1;
+    dateSet.add(dateKey);
   });
 
-  const sortedDates = Object.keys(dateCountMap).sort(
+  const sortedDates = Array.from(dateSet).sort(
     (a, b) => new Date(b).getTime() - new Date(a).getTime()
   );
 
@@ -64,25 +72,6 @@ export default async function NewsPage({
         (item) => item.displayDate.toISOString().split("T")[0] === selectedDate
       )
     : allNews;
-
-  const formatDateLabel = (dateKey: string) => {
-    const date = new Date(dateKey);
-    return date.toLocaleDateString("ko-KR", {
-      month: "short",
-      day: "numeric",
-      weekday: "short",
-    });
-  };
-
-  const formatFullDate = (dateKey: string) => {
-    const date = new Date(dateKey);
-    return date.toLocaleDateString("ko-KR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      weekday: "long",
-    });
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] transition-colors">
@@ -122,65 +111,11 @@ export default async function NewsPage({
         </div>
 
         {/* Date Filter */}
-        <div className="mb-8 space-y-4">
-          <div>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-2 md:inline md:mb-0 md:mr-3">
-              <Calendar className="h-4 w-4 inline mr-1" />
-              날짜:
-            </span>
-            <div className="inline-flex flex-wrap gap-2">
-              <Link
-                href="/news"
-                className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm transition-colors ${
-                  !selectedDate
-                    ? "bg-purple-500 text-white"
-                    : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-                }`}
-              >
-                전체
-                <span className="ml-1.5 text-xs opacity-70">
-                  ({allNews.length})
-                </span>
-              </Link>
-              {sortedDates.slice(0, 14).map((dateKey) => (
-                <Link
-                  key={dateKey}
-                  href={`/news?date=${dateKey}`}
-                  className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm transition-colors ${
-                    selectedDate === dateKey
-                      ? "bg-purple-500 text-white"
-                      : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  {formatDateLabel(dateKey)}
-                  <span className="ml-1.5 text-xs opacity-70">
-                    ({dateCountMap[dateKey]})
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* Active Filter */}
-          {selectedDate && (
-            <div className="flex items-center gap-2 pt-2 border-t border-gray-200 dark:border-[#1a1a1a]">
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                선택된 날짜:
-              </span>
-              <Badge
-                variant="secondary"
-                className="bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300"
-              >
-                {formatFullDate(selectedDate)}
-              </Badge>
-              <Link
-                href="/news"
-                className="text-sm text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 ml-2"
-              >
-                해제
-              </Link>
-            </div>
-          )}
+        <div className="mb-8">
+          <NewsDatePicker
+            selectedDate={selectedDate}
+            availableDates={sortedDates}
+          />
         </div>
 
         {/* News List */}
@@ -193,9 +128,9 @@ export default async function NewsPage({
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {filteredNews.map((item) => (
-              <Link key={item.id} href={`/news/${item.id}`}>
+              <Link key={item.id} href={`/news/${item.id}`} className="block">
                 <Card className="hover:border-foreground/20 transition-colors cursor-pointer">
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between gap-4">
