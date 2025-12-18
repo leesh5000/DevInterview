@@ -155,49 +155,26 @@ export default async function NewsDetailPage({
           {formattedDate}
         </div>
 
-        {/* Original Article Link */}
-        <Card className="mb-6 border-gray-200 dark:border-gray-700">
-          <CardContent className="pt-6">
-            <a
-              href={news.originalUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline font-medium"
-            >
-              <ExternalLink className="h-4 w-4" />
-              원문 보기
-            </a>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-              {news.sourceUrl}
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* AI Summary */}
+        {/* AI Summary with Original Link */}
         <Card className="mb-6 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/50">
           <CardContent className="pt-6">
             <h3 className="font-semibold text-blue-700 dark:text-blue-300 mb-3">
               AI 요약
             </h3>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap mb-4">
               {news.aiSummary}
             </p>
+            <a
+              href={news.originalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
+              <ExternalLink className="h-4 w-4" />
+              원문 보기
+            </a>
           </CardContent>
         </Card>
-
-        {/* Original Description */}
-        {news.description && (
-          <Card className="mb-6 border-gray-200 dark:border-gray-700">
-            <CardContent className="pt-6">
-              <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                원문 요약
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                {news.description}
-              </p>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Related Courses */}
         {relatedCourses.length > 0 && (
