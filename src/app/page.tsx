@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CourseCarousel } from "@/components/CourseCarousel";
 import { Carousel } from "@/components/Carousel";
+import { DailyNewsSection } from "@/components/DailyNewsSection";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Footer from "@/components/Footer";
 import { prisma } from "@/lib/prisma";
@@ -76,6 +77,18 @@ export default async function Home() {
     take: 20,
   });
 
+  // 오늘의 개발 소식 조회 (KST 기준 오늘)
+  const now = new Date();
+  const kstOffset = 9 * 60 * 60 * 1000;
+  const kstDate = new Date(now.getTime() + kstOffset);
+  const today = new Date(kstDate.toISOString().split("T")[0]);
+
+  const dailyNews = await prisma.dailyNews.findMany({
+    where: { displayDate: today },
+    orderBy: { publishedAt: "desc" },
+    take: 5,
+  });
+
   // Organization JSON-LD for homepage
   const organizationJsonLd = {
     "@context": "https://schema.org",
@@ -126,6 +139,20 @@ export default async function Home() {
           </Button>
         </Link>
       </section>
+
+      {/* Daily News Section */}
+      <DailyNewsSection
+        news={dailyNews.map((n) => ({
+          ...n,
+          publishedAt: n.publishedAt.toISOString(),
+          relatedCourses: n.relatedCourses as Array<{
+            courseId: string;
+            title: string;
+            affiliateUrl: string;
+            matchScore: number;
+          }>,
+        }))}
+      />
 
       {/* Popular Courses Section */}
       {popularCourses.length > 0 && (

@@ -65,6 +65,7 @@ npm run test:coverage     # Run tests with coverage report
 - **SuggestionRequest**: Community edit suggestions for questions (pending/approved/rejected status, IP-based rate limiting)
 - **CourseClick**: Tracks affiliate link clicks per question (upsert pattern for incrementing counts)
 - **Course**: Reusable course registry with affiliate URLs and thumbnails (auto-fetched via OG metadata)
+- **DailyNews**: Daily development news with AI summaries and related course recommendations
 
 ### Authentication
 Simple cookie-based admin auth using `ADMIN_PASSWORD` environment variable. Auth logic in `src/lib/auth.ts`.
@@ -81,7 +82,8 @@ Required:
 - `DATABASE_URL` - PostgreSQL connection string (with `?pgbouncer=true&connection_limit=1` for Supabase)
 - `DIRECT_URL` - Direct PostgreSQL connection for migrations (Supabase Session mode)
 - `ADMIN_PASSWORD` - Admin login password
-- `OPENAI_API_KEY` - For AI summary generation
+- `OPENAI_API_KEY` - For AI summary generation and daily news processing
+- `CRON_SECRET` - For Vercel Cron job authentication (daily news collection)
 
 ## Deployment
 
@@ -90,6 +92,7 @@ Production runs on **Vercel + Supabase**:
 - Supabase provides PostgreSQL with PgBouncer connection pooling (region: `ap-northeast-2` Seoul)
 - Migrations run automatically on Vercel via `prebuild` script (`prisma generate && prisma migrate deploy`)
 - Speed Insights enabled via `@vercel/speed-insights`
+- **Cron Jobs**: Daily news collection at 00:00 UTC (09:00 KST) via `vercel.json` crons config
 
 ### Migration Workflow
 - **Local development**: Use `npx prisma migrate dev --name <name>` to create new migrations
@@ -189,6 +192,24 @@ SEO is configured via Next.js Metadata API with constants in `src/lib/seo.ts`:
 - **OG Image**: Default image at `public/og-default.png` (1200x630px)
 
 Search Console verification codes go in `layout.tsx` metadata.verification (Google, Naver).
+
+### Daily News System
+Automated daily development news collection from GeekNews RSS:
+- **Cron endpoint**: `POST /api/cron/daily-news` - Vercel Cron calls at 00:00 UTC (09:00 KST)
+- **RSS Parser**: `src/lib/rss-parser.ts` supports both Atom and RSS formats (GeekNews uses Atom)
+- **AI Processing**: `generateNewsSummary()` creates 2-3 sentence Korean summaries, `matchRelatedCourses()` finds relevant courses from DB
+- **Admin management**: `/admin/news` for listing, `/admin/news/[id]/edit` for editing
+- **Homepage display**: `DailyNewsSection` component shows today's news (max 5) after Hero section
+- **Manual trigger** (local dev): `curl -X POST http://localhost:3001/api/cron/daily-news`
+- **relatedCourses** JSON structure:
+```typescript
+interface DailyNewsRelatedCourse {
+  courseId: string;
+  title: string;
+  affiliateUrl: string;
+  matchScore: number;
+}
+```
 
 ## Notes
 

@@ -134,3 +134,20 @@ model DailyClickLog {
   @@unique([affiliateUrl, date])
   @@index([date])
 }
+
+// 오늘의 개발 소식
+model DailyNews {
+  id             String   @id @default(uuid())
+  title          String                    // 기사 제목
+  originalUrl    String   @unique          // 원본 기사 URL (중복 방지)
+  sourceUrl      String                    // 뉴스 소스 URL (GeekNews 등)
+  description    String?  @db.Text         // 원본 설명
+  aiSummary      String   @db.Text         // AI 요약
+  relatedCourses Json     @default("[]")   // 관련 강의 [{courseId, title, affiliateUrl, matchScore}]
+  publishedAt    DateTime                  // 원본 기사 발행일
+  fetchedAt      DateTime @default(now())  // 수집 시간
+  displayDate    DateTime @db.Date         // 표시 날짜 (KST 기준)
+
+  @@index([displayDate])
+  @@index([publishedAt])
+}
