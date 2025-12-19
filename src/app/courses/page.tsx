@@ -41,43 +41,37 @@ export default async function CoursesPage() {
     clickCountMap[stat.affiliateUrl] = stat._sum.clickCount || 0;
   });
 
-  // 연관 질문 수 조회 (affiliateUrl로 매칭)
-  const relatedQuestionCounts = await Promise.all(
-    courses.map(async (course) => {
-      const count = await prisma.$queryRaw<[{ count: bigint }]>`
-        SELECT COUNT(*)::bigint as count
-        FROM "InterviewQuestion"
-        WHERE "isPublished" = true
-        AND EXISTS (
-          SELECT 1 FROM jsonb_array_elements("relatedCourses") as elem
-          WHERE elem->>'affiliateUrl' = ${course.affiliateUrl}
-        )
-      `;
-      return { id: course.id, count: Number(count[0].count) };
-    })
-  );
+  // 연관 질문 수 조회 (배치 쿼리로 한 번에 조회)
+  const relatedQuestionCounts = await prisma.$queryRaw<
+    { affiliate_url: string; count: bigint }[]
+  >`
+    SELECT
+      elem->>'affiliateUrl' as affiliate_url,
+      COUNT(*)::bigint as count
+    FROM "InterviewQuestion",
+    LATERAL jsonb_array_elements("relatedCourses") as elem
+    WHERE "isPublished" = true
+    GROUP BY elem->>'affiliateUrl'
+  `;
   const questionCountMap: Record<string, number> = {};
   relatedQuestionCounts.forEach((item) => {
-    questionCountMap[item.id] = item.count;
+    questionCountMap[item.affiliate_url] = Number(item.count);
   });
 
-  // 연관 뉴스 수 조회 (courseId로 매칭)
-  const relatedNewsCounts = await Promise.all(
-    courses.map(async (course) => {
-      const count = await prisma.$queryRaw<[{ count: bigint }]>`
-        SELECT COUNT(*)::bigint as count
-        FROM "DailyNews"
-        WHERE EXISTS (
-          SELECT 1 FROM jsonb_array_elements("relatedCourses") as elem
-          WHERE elem->>'courseId' = ${course.id}
-        )
-      `;
-      return { id: course.id, count: Number(count[0].count) };
-    })
-  );
+  // 연관 뉴스 수 조회 (배치 쿼리로 한 번에 조회)
+  const relatedNewsCounts = await prisma.$queryRaw<
+    { course_id: string; count: bigint }[]
+  >`
+    SELECT
+      elem->>'courseId' as course_id,
+      COUNT(*)::bigint as count
+    FROM "DailyNews",
+    LATERAL jsonb_array_elements("relatedCourses") as elem
+    GROUP BY elem->>'courseId'
+  `;
   const newsCountMap: Record<string, number> = {};
   relatedNewsCounts.forEach((item) => {
-    newsCountMap[item.id] = item.count;
+    newsCountMap[item.course_id] = Number(item.count);
   });
 
   // 클릭 수, 연관 질문/뉴스 수 추가 및 인기순 정렬
@@ -85,7 +79,7 @@ export default async function CoursesPage() {
     .map((course) => ({
       ...course,
       clickCount: clickCountMap[course.affiliateUrl] || 0,
-      relatedQuestionCount: questionCountMap[course.id] || 0,
+      relatedQuestionCount: questionCountMap[course.affiliateUrl] || 0,
       relatedNewsCount: newsCountMap[course.id] || 0,
     }))
     .sort((a, b) => b.clickCount - a.clickCount)
