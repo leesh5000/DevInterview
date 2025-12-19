@@ -12,7 +12,21 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(npx tsc:*)",
-      "Bash(npm run lint)"
+      "Bash(npm run lint)",
+      "Bash(npm run dev:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(cat:*)",
+      "Bash(fuser:*)",
+      "Bash(lsof:*)",
+      "WebFetch(domain:pickranky.com)",
+      "Bash(npm install:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npx tsx:*)",
+      "Bash(source:*)",
+      "Bash(npx prisma migrate:*)",
+      "Bash(npx prisma:*)",
+      "WebSearch",
+      "Bash(npm run lint:*)"
     ]
   }
 }

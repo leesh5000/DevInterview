@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import ReactMarkdown from "react-markdown";
 import {
   ArrowLeft,
   BookOpen,
@@ -167,9 +168,9 @@ export default async function NewsDetailPage({
             <h3 className="font-semibold text-blue-700 dark:text-blue-300 mb-3">
               AI 요약
             </h3>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap mb-4">
-              {news.aiSummary}
-            </p>
+            <div className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4 prose prose-sm dark:prose-invert max-w-none prose-p:my-2">
+              <ReactMarkdown>{news.aiSummary}</ReactMarkdown>
+            </div>
             <a
               href={news.originalUrl}
               target="_blank"

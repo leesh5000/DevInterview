@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import BulkQuestionForm from "@/components/admin/BulkQuestionForm";
+import BulkQuestionTabs from "@/components/admin/BulkQuestionTabs";
 
 export default async function BulkQuestionPage() {
   const authenticated = await isAuthenticated();
@@ -23,7 +23,7 @@ export default async function BulkQuestionPage() {
       <h1 className="text-2xl font-semibold text-foreground mb-8">
         게시물 일괄 등록
       </h1>
-      <BulkQuestionForm categories={categories} targetRoles={targetRoles} />
+      <BulkQuestionTabs categories={categories} targetRoles={targetRoles} />
     </main>
   );
 }

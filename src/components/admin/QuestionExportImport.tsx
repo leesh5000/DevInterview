@@ -2,7 +2,8 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Download, Upload } from "lucide-react";
+import Link from "next/link";
+import { Download, Upload, FileJson, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -134,11 +135,35 @@ export function ImportButton() {
           JSON 가져오기
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>JSON 데이터 가져오기</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4 mt-4">
+        <div className="space-y-4 mt-4 overflow-y-auto flex-1">
+          {/* 일괄 등록 페이지 안내 */}
+          <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-md">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <div className="text-sm">
+                <p className="text-blue-700 dark:text-blue-300 font-medium">
+                  미리보기 및 카테고리 생성이 필요하신가요?
+                </p>
+                <p className="text-muted-foreground mt-1">
+                  존재하지 않는 카테고리가 있거나, 등록 전 미리보기가 필요하시면{" "}
+                  <Link
+                    href="/admin/questions/bulk"
+                    className="text-blue-600 dark:text-blue-400 underline hover:no-underline font-medium"
+                    onClick={() => setOpen(false)}
+                  >
+                    <FileJson className="w-3 h-3 inline mr-1" />
+                    일괄 등록 페이지
+                  </Link>
+                  를 이용해주세요.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="space-y-2">
             <Label>JSON 파일 업로드</Label>
             <input
@@ -177,7 +202,7 @@ export function ImportButton() {
   ]
 }`}
               rows={12}
-              className="font-mono text-sm"
+              className="font-mono text-sm max-h-[40vh] overflow-y-auto resize-y"
             />
           </div>
 

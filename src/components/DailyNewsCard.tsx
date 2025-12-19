@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import ReactMarkdown from "react-markdown";
 import { BookOpen, Calendar, ExternalLink } from "lucide-react";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 
 interface RelatedCourse {
@@ -58,9 +58,9 @@ export function DailyNewsCard({ news }: DailyNewsCardProps) {
         </div>
       </CardHeader>
       <CardContent className="pt-0">
-        <CardDescription className="text-xs md:text-sm leading-relaxed mb-3">
-          {news.aiSummary}
-        </CardDescription>
+        <div className="text-xs md:text-sm leading-relaxed mb-3 text-muted-foreground prose prose-sm dark:prose-invert max-w-none prose-p:my-1">
+          <ReactMarkdown>{news.aiSummary}</ReactMarkdown>
+        </div>
 
         {news.relatedCourses.length > 0 && (
           <div className="pt-2 border-t border-border">

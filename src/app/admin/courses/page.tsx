@@ -13,6 +13,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import CourseDeleteButton from "@/components/admin/CourseDeleteButton";
 import CourseForm from "@/components/admin/CourseForm";
+import CourseExportButton from "@/components/admin/CourseExportButton";
 
 export default async function AdminCoursesPage() {
   const authenticated = await isAuthenticated();
@@ -29,9 +30,12 @@ export default async function AdminCoursesPage() {
     <main className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-semibold text-foreground">강의 관리</h1>
-        <CourseForm
-          trigger={<Button>새 강의 추가</Button>}
-        />
+        <div className="flex gap-2">
+          <CourseExportButton courses={courses} />
+          <CourseForm
+            trigger={<Button>새 강의 추가</Button>}
+          />
+        </div>
       </div>
 
       {courses.length === 0 ? (

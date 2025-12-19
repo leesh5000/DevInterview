@@ -66,6 +66,7 @@ npm run test:coverage     # Run tests with coverage report
 - **CourseClick**: Tracks affiliate link clicks per question (upsert pattern for incrementing counts)
 - **Course**: Reusable course registry with affiliate URLs and thumbnails (auto-fetched via OG metadata)
 - **DailyNews**: Daily development news with AI summaries and related course recommendations
+- **CronLog**: Cron job execution history (status, duration, processed count, error details)
 
 ### Authentication
 Simple cookie-based admin auth using `ADMIN_PASSWORD` environment variable. Auth logic in `src/lib/auth.ts`.
@@ -132,17 +133,32 @@ return <RadixComponent />;
 Course links use `CourseCard` component with click tracking via `/api/course-clicks` (POST to increment, GET to fetch counts).
 
 ### Bulk Question Registration
-Admin can paste formatted text at `/admin/questions/bulk` to register multiple questions at once:
+Admin can register multiple questions at `/admin/questions/bulk` via two methods (tabbed UI):
+
+**JSON Upload** (`JsonBulkQuestionForm`):
+- Upload JSON file or paste JSON text directly
+- Preview all questions with thumbnails, categories, tags, related courses
+- Select which questions to register via checkboxes
+- Create missing categories on-the-fly with inline buttons
+- JSON format: `{ "questions": [{ categorySlug, questionTitle, questionBody, answerContent, targetRoles, tags, relatedCourses }] }`
+
+**Text Parsing** (`BulkQuestionForm`):
 - Parser in `src/lib/bulk-parser.ts` extracts category, tags, title, body, and answer from structured text
 - Each question's category is manually mapped via dropdown in the preview UI
 - Target roles can be set globally or per-question
 
 ### JSON Export/Import
-Admin can export all questions as JSON and import them back for backup/migration:
+Admin can export data as JSON for backup/migration:
+
+**Questions**:
 - Export API: `GET /api/questions/export` - returns all questions with `categorySlug` for portability
 - Import API: `POST /api/questions/import` - accepts `{ questions: [...] }` and bulk creates via Prisma transaction
 - UI components in `src/components/admin/QuestionExportImport.tsx`
 - **Note**: When importing `relatedCourses` (Prisma Json field), use double cast: `as unknown as Prisma.InputJsonValue`
+
+**Courses**:
+- `CourseExportButton` component in `/admin/courses` exports course list as JSON
+- Format: `[{ title, affiliateUrl, thumbnailUrl? }]`
 
 ### Horizontal Scroll Sections
 Homepage uses horizontal scroll for categories, target roles, and courses:
@@ -222,11 +238,18 @@ await prisma.$queryRaw`
 ### Daily News System
 Automated daily development news collection from GeekNews RSS:
 - **Cron endpoint**: `POST /api/cron/daily-news` - Vercel Cron calls at 00:00 UTC (09:00 KST)
+- **Authentication**: Accepts both Cron secret (`Authorization: Bearer`) and admin cookie auth
+- **Daily limit**: Maximum 10 news items per day
 - **RSS Parser**: `src/lib/rss-parser.ts` supports both Atom and RSS formats (GeekNews uses Atom)
-- **AI Processing**: `generateNewsSummary()` creates 2-3 sentence Korean summaries, `matchRelatedCourses()` finds relevant courses from DB
-- **Admin management**: `/admin/news` for listing, `/admin/news/[id]/edit` for editing
-- **Homepage display**: `DailyNewsSection` component shows today's news (max 5) after Hero section
-- **Manual trigger** (local dev): `curl -X POST http://localhost:3001/api/cron/daily-news`
+- **AI Processing**: `generateNewsSummary()` creates structured Korean summaries with consistent format:
+  ```
+  **핵심 내용**: (1-2문장)
+  **개발자 관점**: (1문장)
+  ```
+  `matchRelatedCourses()` finds relevant courses from DB
+- **Execution logging**: All cron runs are logged to `CronLog` table with status, duration, and error details
+- **Admin management**: `/admin/news` shows collection history and news list, with manual collection button
+- **Homepage display**: `DailyNewsSection` component shows today's news after Hero section
 - **relatedCourses** JSON structure:
 ```typescript
 interface DailyNewsRelatedCourse {

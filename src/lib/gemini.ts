@@ -38,16 +38,20 @@ export async function generateNewsSummary(
 
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-  const prompt = `당신은 개발자를 위한 뉴스 큐레이터입니다. 기술 트렌드와 실무 관련성을 중심으로 간결하게 요약합니다.
+  const prompt = `당신은 개발자를 위한 뉴스 큐레이터입니다.
 
-다음 개발 뉴스 기사를 한국어로 2-3문장으로 요약해주세요.
-개발자가 왜 이 기사를 읽어야 하는지, 핵심 포인트가 무엇인지 설명하세요.
+다음 개발 뉴스를 아래 형식에 맞춰 한국어로 요약해주세요.
 
+## 형식 (반드시 이 형식을 따라주세요)
+**핵심 내용**: (기사의 핵심 내용을 1-2문장으로 설명)
+
+**개발자 관점**: (이 소식이 개발자에게 왜 중요한지, 어떤 시사점이 있는지 1문장으로 설명)
+
+## 뉴스 정보
 제목: ${title}
-
 내용: ${description || "(내용 없음)"}
 
-요약:`;
+## 요약 (위 형식대로 작성):`;
 
   const result = await model.generateContent(prompt);
   const response = await result.response;

@@ -45,10 +45,17 @@ export async function POST(request: NextRequest) {
     });
     const existingUrlSet = new Set(existingUrls.map((n) => n.originalUrl));
 
-    // 4. 새 뉴스만 필터링 (최대 10개)
+    // 4. 새 뉴스만 필터링 (최대 10개, 24시간 이내 발행된 기사만)
     const maxNews = 10;
+    const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
     const newItems = feed.items
       .filter((item) => !existingUrlSet.has(item.link))
+      .filter((item) => {
+        if (!item.pubDate) return false;
+        const pubDate = new Date(item.pubDate);
+        return pubDate >= oneDayAgo;
+      })
       .slice(0, maxNews - existingUrls.length);
 
     if (newItems.length === 0) {
