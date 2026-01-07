@@ -259,6 +259,12 @@ interface DailyNewsRelatedCourse {
   matchScore: number;
 }
 ```
+- **Troubleshooting**: If news is not being collected daily:
+  1. Check `CronLog` table for execution history (`jobName: 'daily-news'`)
+  2. Verify `CRON_SECRET` is set in Vercel Environment Variables (Settings → Environment Variables)
+  3. Ensure `CRON_SECRET` is applied to **Production** environment
+  4. Check Vercel dashboard → Logs for `/api/cron/daily-news` call history
+  5. Manual test: `curl -X POST https://your-domain/api/cron/daily-news -H "Authorization: Bearer YOUR_CRON_SECRET"`
 
 ## Notes
 
