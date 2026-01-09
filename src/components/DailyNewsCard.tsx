@@ -22,6 +22,7 @@ interface DailyNewsItem {
   id: string;
   title: string;
   originalUrl: string;
+  sourceUrl: string;
   aiSummary: string;
   relatedCourses: RelatedCourse[];
   publishedAt: string;
@@ -38,6 +39,15 @@ export function DailyNewsCard({ news }: DailyNewsCardProps) {
     day: "numeric",
   });
 
+  // sourceUrl에서 호스트네임 추출
+  const getSourceName = (url: string) => {
+    try {
+      return new URL(url).hostname.replace("www.", "");
+    } catch {
+      return url;
+    }
+  };
+
   return (
     <Card className="w-full hover:border-foreground/20 transition-colors">
       <CardHeader className="pb-2">
@@ -50,10 +60,12 @@ export function DailyNewsCard({ news }: DailyNewsCardProps) {
               {news.title}
             </Link>
           </CardTitle>
-          <span className="text-xs text-muted-foreground flex items-center gap-1 flex-shrink-0">
+          <div className="text-xs text-muted-foreground flex items-center gap-1 flex-shrink-0">
             <Calendar className="h-3 w-3" />
-            {formattedDate}
-          </span>
+            <span>{formattedDate}</span>
+            <span className="mx-1">·</span>
+            <span>{getSourceName(news.sourceUrl)}</span>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="pt-0">

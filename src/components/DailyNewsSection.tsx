@@ -14,6 +14,7 @@ interface DailyNewsItem {
   id: string;
   title: string;
   originalUrl: string;
+  sourceUrl: string;
   aiSummary: string;
   relatedCourses: RelatedCourse[];
   publishedAt: string;

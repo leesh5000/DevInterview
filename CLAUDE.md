@@ -62,10 +62,11 @@ npm run test:coverage     # Run tests with coverage report
 - **Category**: Interview question categories (database, network, etc.)
 - **TargetRole**: Target audience roles (backend developer, frontend developer, etc.)
 - **InterviewQuestion**: Questions with markdown body/answer, target roles, tags, AI summary, and related courses
-- **SuggestionRequest**: Community edit suggestions for questions (pending/approved/rejected status, IP-based rate limiting)
+- **SuggestionRequest**: Community edit suggestions for questions (pending/approved/rejected status, atomic rate limiting via unique constraint)
 - **CourseClick**: Tracks affiliate link clicks per question (upsert pattern for incrementing counts)
 - **Course**: Reusable course registry with affiliate URLs and thumbnails (auto-fetched via OG metadata)
 - **DailyNews**: Daily development news with AI summaries and related course recommendations
+- **RssSource**: RSS feed sources for news collection (key, name, url, sourceUrl, isEnabled)
 - **CronLog**: Cron job execution history (status, duration, processed count, error details)
 
 ### Authentication
@@ -75,7 +76,7 @@ Simple cookie-based admin auth using `ADMIN_PASSWORD` environment variable. Auth
 - GET endpoints are public
 - POST/PUT/DELETE endpoints check `isAuthenticated()` and return 401 if unauthorized
 - All question/category mutations require admin authentication
-- Suggestion submissions (`POST /api/suggestions`) are public but rate-limited by IP (1 request per minute)
+- Suggestion submissions (`POST /api/suggestions`) are public but rate-limited by IP using atomic unique constraint (1 request per minute, race-condition safe)
 
 ## Environment Variables
 
@@ -236,11 +237,13 @@ await prisma.$queryRaw`
 ```
 
 ### Daily News System
-Automated daily development news collection from GeekNews RSS:
+Automated daily development news collection from multiple RSS sources:
 - **Cron endpoint**: `POST /api/cron/daily-news` - Vercel Cron calls at 00:00 UTC (09:00 KST)
 - **Authentication**: Accepts both Cron secret (`Authorization: Bearer`) and admin cookie auth
-- **Daily limit**: Maximum 10 news items per day
-- **RSS Parser**: `src/lib/rss-parser.ts` supports both Atom and RSS formats (GeekNews uses Atom)
+- **Daily limit**: Maximum 10 news items per source
+- **RSS Sources**: Managed via `RssSource` table, admin can add/delete sources in `/admin/news`
+- **RSS Parser**: `src/lib/rss-parser.ts` supports both Atom and RSS formats
+- **Default sources**: GeekNews (Atom), Hacker News (RSS) - initialized on first API call if DB is empty
 - **AI Processing**: `generateNewsSummary()` creates structured Korean summaries with consistent format:
   ```
   **핵심 내용**: (1-2문장)
@@ -273,3 +276,21 @@ interface DailyNewsRelatedCourse {
 - Related courses support affiliate URLs with thumbnails (auto-fetched via OG image API at `/api/og-image`)
 - Questions filtering supports combining category and target role filters via URL params (`?category=xxx&role=yyy`)
 - Community suggestion workflow: User submits edit → Admin reviews in `/admin/suggestions` → Approve (applies changes, increments `reviewCount`) or Reject
+
+### Atomic Rate Limiting Pattern
+Rate limiting for suggestions uses DB unique constraint instead of check-then-act pattern to prevent race conditions:
+```typescript
+// minuteBucket = Math.floor(Date.now() / 60000) - same value within the same minute
+// @@unique([requesterIp, minuteBucket]) ensures atomic rate limiting
+
+try {
+  await prisma.suggestionRequest.create({
+    data: { ..., minuteBucket: BigInt(Math.floor(Date.now() / 60000)) },
+  });
+} catch (error) {
+  if (error.code === "P2002") {  // Unique constraint violation
+    return NextResponse.json({ error: "1분 후에 다시 시도해주세요." }, { status: 429 });
+  }
+}
+```
+This pattern avoids the race condition where two concurrent requests both pass the "check" phase before either completes the "insert" phase.

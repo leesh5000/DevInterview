@@ -141,12 +141,24 @@ export default async function NewsPage({
                       <CardTitle className="text-base md:text-lg font-medium leading-tight">
                         {item.title}
                       </CardTitle>
-                      <span className="text-xs text-muted-foreground flex-shrink-0">
-                        {new Date(item.publishedAt).toLocaleDateString("ko-KR", {
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </span>
+                      <div className="text-xs text-muted-foreground flex-shrink-0 flex items-center gap-1">
+                        <span>
+                          {new Date(item.publishedAt).toLocaleDateString("ko-KR", {
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
+                        <span>·</span>
+                        <span>
+                          {(() => {
+                            try {
+                              return new URL(item.sourceUrl).hostname.replace("www.", "");
+                            } catch {
+                              return item.sourceUrl;
+                            }
+                          })()}
+                        </span>
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent className="pt-0">

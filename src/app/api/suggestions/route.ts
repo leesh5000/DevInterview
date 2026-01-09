@@ -27,21 +27,8 @@ export async function POST(request: NextRequest) {
     // IP 추출
     const requesterIp = getClientIp(request);
 
-    // 1분 내 중복 제안 체크 (스팸 방지)
-    const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
-    const recentSuggestion = await prisma.suggestionRequest.findFirst({
-      where: {
-        requesterIp,
-        createdAt: { gte: oneMinuteAgo },
-      },
-    });
-
-    if (recentSuggestion) {
-      return NextResponse.json(
-        { error: "1분 후에 다시 시도해주세요." },
-        { status: 429 }
-      );
-    }
+    // 분 단위 타임스탬프 (Rate Limiting용)
+    const minuteBucket = BigInt(Math.floor(Date.now() / 60000));
 
     // 원본 게시글 존재 확인
     const originalQuestion = await prisma.interviewQuestion.findUnique({
@@ -55,7 +42,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 수정 제안 생성
+    // 수정 제안 생성 (Unique Constraint로 원자적 Rate Limiting 보장)
     const suggestion = await prisma.suggestionRequest.create({
       data: {
         questionId,
@@ -63,11 +50,24 @@ export async function POST(request: NextRequest) {
         answerContent: answerContent || originalQuestion.answerContent,
         reason: reason.trim(),
         requesterIp,
+        minuteBucket,
       },
     });
 
     return NextResponse.json(suggestion, { status: 201 });
   } catch (error) {
+    // Prisma P2002: Unique constraint violation (동일 IP + 동일 분에 중복 요청)
+    if (
+      error instanceof Error &&
+      "code" in error &&
+      (error as { code: string }).code === "P2002"
+    ) {
+      return NextResponse.json(
+        { error: "1분 후에 다시 시도해주세요." },
+        { status: 429 }
+      );
+    }
+
     console.error("Error creating suggestion:", error);
     return NextResponse.json(
       { error: "수정 제안 생성에 실패했습니다." },

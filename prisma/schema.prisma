@@ -84,6 +84,7 @@ model SuggestionRequest {
 
   // 요청자 정보
   requesterIp   String
+  minuteBucket  BigInt   // Rate limiting용 분 단위 타임스탬프 (Math.floor(Date.now() / 60000))
 
   // 상태 관리
   status        SuggestionStatus @default(PENDING)
@@ -92,9 +93,9 @@ model SuggestionRequest {
   createdAt     DateTime @default(now())
   reviewedAt    DateTime?
 
+  @@unique([requesterIp, minuteBucket])  // 동일 IP에서 1분 내 중복 요청 방지 (원자적 보장)
   @@index([questionId])
   @@index([status])
-  @@index([requesterIp, createdAt])
 }
 
 // 강의 링크 클릭 추적

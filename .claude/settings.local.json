@@ -26,7 +26,14 @@
       "Bash(npx prisma migrate:*)",
       "Bash(npx prisma:*)",
       "WebSearch",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Bash(node check-news.js:*)",
+      "Bash(openssl rand:*)",
+      "Bash(rm:*)",
+      "Bash(npm run test:run:*)",
+      "Bash(git push)",
+      "Bash(git remote set-url:*)",
+      "WebFetch(domain:helloworld.kurly.com)"
     ]
   }
 }
